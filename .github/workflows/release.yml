@@ -1,0 +1,127 @@
+name: Release Claude Code Agents
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release'
+        required: true
+        default: 'v1.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Verify claude directory exists
+        run: |
+          if [ ! -d "claude" ]; then
+            echo "Error: claude directory not found"
+            exit 1
+          fi
+          echo "Contents of claude directory:"
+          ls -la claude/
+          
+      - name: Package agents
+        run: |
+          # Create release directory
+          mkdir -p release
+          
+          # Copy claude directory contents to release
+          cp -r claude/* release/
+          
+          # Create version file
+          echo "${GITHUB_REF_NAME:-${{ github.event.inputs.tag }}}" > release/VERSION
+          
+          # Create zip file
+          cd release
+          zip -r ../claude-agents-${GITHUB_REF_NAME:-${{ github.event.inputs.tag }}}.zip .
+          cd ..
+          
+          # Verify zip contents
+          echo "Zip file contents:"
+          unzip -l claude-agents-${GITHUB_REF_NAME:-${{ github.event.inputs.tag }}}.zip
+          
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          TAG=${GITHUB_REF_NAME:-${{ github.event.inputs.tag }}}
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          
+          cat > release_notes.md << EOF
+          # Claude Code Agents Release $TAG
+          
+          This release contains the complete set of enhanced Claude Code agents with sophisticated workflows and interactive capabilities.
+          
+          ## What's Included
+          
+          - **8 Enhanced Agents**: All agents with interactive elicitation and structured workflows
+          - **Agent Files**: Complete agent definitions with commands and documentation
+          - **Version Information**: Track installed version for future updates
+          
+          ## Installation
+          
+          ### Quick Install
+          \`\`\`bash
+          # Download and extract to your Claude Code agents directory
+          wget https://github.com/${{ github.repository }}/releases/download/$TAG/claude-agents-$TAG.zip
+          unzip claude-agents-$TAG.zip -d ~/.claude/
+          \`\`\`
+          
+          ### Project-Specific Install
+          \`\`\`bash
+          # Download and extract to your project's .claude directory
+          wget https://github.com/${{ github.repository }}/releases/download/$TAG/claude-agents-$TAG.zip
+          unzip claude-agents-$TAG.zip -d /path/to/your/project/.claude/
+          \`\`\`
+          
+          ## Agents Included
+          
+          1. **Analyst Agent (Mary)** 📊 - Market research, brainstorming, competitive analysis
+          2. **Scrum Master Agent (Bob)** 🏃 - Story creation, validation, and agile ceremonies
+          3. **Developer Agent (James)** 💻 - Code implementation, debugging, and development
+          4. **Product Manager Agent (John)** 📋 - PRDs, product strategy, documentation
+          5. **Architect Agent (Winston)** 🏗️ - System design, technology selection, infrastructure
+          6. **QA Engineer Agent (Quinn)** 🧪 - Code review, testing strategies, quality assurance
+          7. **Product Owner Agent (Sarah)** 📝 - Backlog management, story refinement
+          8. **UX Expert Agent (Sally)** 🎨 - UI/UX design, wireframes, AI frontend prompts
+          
+          ## Enhanced Features
+          
+          - Interactive elicitation with 1-9 numbered options
+          - Sequential task execution with validation
+          - Template-driven document generation
+          - Brownfield project support
+          - AI-optimized workflows
+          
+          See the [README](https://github.com/${{ github.repository }}/blob/main/README.md) for complete usage documentation.
+          EOF
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.release_notes.outputs.tag }}
+          name: Claude Code Agents ${{ steps.release_notes.outputs.tag }}
+          body_path: release_notes.md
+          files: |
+            claude-agents-${{ steps.release_notes.outputs.tag }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-agents-${{ steps.release_notes.outputs.tag }}
+          path: claude-agents-${{ steps.release_notes.outputs.tag }}.zip
+          retention-days: 90

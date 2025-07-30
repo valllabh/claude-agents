@@ -1,30 +1,109 @@
-# Claude Code Agents Usage Guide
+# Enhanced Claude Code Agents
 
-This guide shows you how to use the enhanced Claude Code agents in this project. **All 8 agents have been fully enhanced with sophisticated task implementations.**
+Sophisticated Claude Code subagents with enhanced workflows and interactive capabilities for comprehensive software development.
 
-## Quick Start
+## Overview
 
-### Basic Agent Usage
+This project provides 8 enhanced Claude Code agents that work together to support the complete software development lifecycle - from discovery and planning through implementation and quality assurance. Each agent has been enhanced with sophisticated task implementations, interactive elicitation, and structured workflows.
+
+## 🚀 Quick Start
+
+Get started with enhanced Claude Code agents in seconds:
+
 ```bash
-# Use an agent for a task
-claude --print "use analyst agent to help with market research"
-
-# Start an interactive session with an agent
-claude "I need the analyst agent to facilitate a brainstorming session"
-
-# Get help from a specific agent
-claude --print "use analyst agent: show me your available commands"
+# One-line install - download and install latest agents
+curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh | bash -s -- --from-github
 ```
 
-### Key Enhanced Features
+Then use your agents:
+```bash
+# Start with analysis and brainstorming
+claude "use analyst agent: brainstorm ways to improve our development process"
 
-All enhanced agents include these powerful capabilities:
+# Create user stories  
+claude "use scrum-master agent: create a story for user authentication"
+
+# Get AI-optimized UI prompts
+claude "use ux-expert agent: create AI prompt for responsive dashboard"
+```
+
+## Project Structure
+
+```
+claude-agents/
+├── claude/                   # Claude CLI commands and agents
+│   └── agents/              # Agent definitions
+│       ├── analyst.md
+│       ├── architect.md
+│       ├── developer.md
+│       ├── product-manager.md
+│       ├── product-owner.md
+│       ├── qa-engineer.md
+│       ├── scrum-master.md
+│       └── ux-expert.md
+├── install-agents.sh        # Installation script
+├── CLAUDE.md                # Project instructions
+└── README.md                # This file
+```
+
+## Quick Installation
+
+### Option 1: One-Line Install (Recommended)
+```bash
+# Download and install latest agents from GitHub releases
+curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh | bash -s -- --from-github
+```
+
+Or with wget:
+```bash
+# Download and install latest agents from GitHub releases
+wget -qO- https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh | bash -s -- --from-github
+```
+
+### Option 2: Download Script First
+```bash
+# Download the installer script
+curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh -o install-agents.sh
+chmod +x install-agents.sh
+
+# Install latest release
+./install-agents.sh --from-github
+
+# Or install specific version
+./install-agents.sh --from-github v1.0.0
+
+# Or check what's available
+./install-agents.sh --check-updates
+```
+
+### Option 3: Manual Installation (Development)
+```bash
+# Clone this repository for local development
+git clone https://github.com/vajoshi/claude-agents.git
+cd claude-agents
+
+# Install from local files
+./install-agents.sh --local
+```
+
+### Installation Location
+
+All agents are installed to your Claude Code system directory:
+- **System Installation**: `~/.claude/agents/`
+- **Automatic Backup**: Previous versions backed up to `~/.claude/agents-backup-[timestamp]/`
+- **Version Tracking**: Current version stored in `~/.claude/VERSION`
+
+The installer automatically creates the necessary directories and handles backups of existing agents.
+
+## Agent Capabilities
+
+All enhanced agents include sophisticated workflows with:
 - **Interactive Elicitation**: 1-9 numbered options format with "Select 1-9 or type your feedback:"
-- **Sequential Workflows**: Step-by-step execution with validation checkpoints
-- **Document Generation**: Structured outputs with comprehensive details
-- **Quality Validation**: Systematic validation and review processes
-- **Brownfield Support**: Specialized workflows for existing project enhancement
-- **AI Integration**: Optimized for AI consumption and generation
+- **Sequential Task Execution**: Step-by-step workflows with validation checkpoints
+- **Template-driven Document Generation**: Structured outputs with comprehensive details
+- **Comprehensive Quality Assurance**: Systematic validation and review processes
+- **Brownfield Project Support**: Specialized workflows for existing project enhancement
+- **AI-optimized Workflows**: Designed for optimal AI consumption and generation
 
 ---
 
@@ -308,8 +387,6 @@ claude "use ux-expert agent: create AI prompt for responsive user dashboard"
    - Don't try to skip steps or rush through
    - Engage with one technique/process at a time
 
-### Common Workflows
-
 ## Agent Sequence for New Projects
 
 ### Phase 1: Discovery & Planning
@@ -318,18 +395,12 @@ claude "use ux-expert agent: create AI prompt for responsive user dashboard"
    claude "use product-manager agent: document-project for new user management system"
    claude "use product-manager agent: create-doc prd-template"
    ```
-   - Create PRDs and product documentation
-   - Conduct market research and feature prioritization
-   - Document existing project architecture for AI agents
 
 2. **Business Analyst (Mary)** 📊
    ```bash
    claude "use analyst agent: brainstorm user authentication improvements"
    claude "use analyst agent: create-doc project-brief-tmpl"
    ```
-   - Facilitate brainstorming and ideation sessions
-   - Create project briefs and competitive analysis
-   - Generate research prompts for architectural decisions
 
 ### Phase 2: Design & Architecture
 3. **UX Expert (Sally)** 🎨
@@ -337,18 +408,12 @@ claude "use ux-expert agent: create AI prompt for responsive user dashboard"
    claude "use ux-expert agent: design-wireframe user registration flow"
    claude "use ux-expert agent: ai-ui-prompt responsive dashboard layout"
    ```
-   - Design wireframes and user interfaces
-   - Create frontend specifications and accessibility audits
-   - Generate AI prompts for frontend development tools
 
 4. **System Architect (Winston)** 🏗️
    ```bash
    claude "use architect agent: design-system user management requirements"
    claude "use architect agent: design-api authentication service"
    ```
-   - Design system architecture and infrastructure
-   - Select technologies and create Architecture Decision Records
-   - Plan scalable infrastructure and API design
 
 ### Phase 3: Development Planning
 5. **Product Owner (Sarah)** 📝
@@ -356,18 +421,12 @@ claude "use ux-expert agent: create AI prompt for responsive user dashboard"
    claude "use product-owner agent: refine-backlog user authentication epic"
    claude "use product-owner agent: create-story user registration requirement"
    ```
-   - Refine backlog and create detailed user stories
-   - Plan sprints and define acceptance criteria
-   - Review project artifacts for consistency
 
 6. **Scrum Master (Bob)** 🏃
    ```bash
    claude "use scrum-master agent: create-story user authentication epic"
    claude "use scrum-master agent: validate-story user-registration-story"
    ```
-   - Break down epics into implementable stories
-   - Validate story completeness and clarity
-   - Facilitate agile ceremonies and process guidance
 
 ### Phase 4: Implementation & Quality
 7. **Developer (James)** 💻
@@ -375,18 +434,12 @@ claude "use ux-expert agent: create AI prompt for responsive user dashboard"
    claude "use developer agent: develop-story 1.1"
    claude "use developer agent: execute-checklist architecture-checklist"
    ```
-   - Implement story requirements sequentially
-   - Execute comprehensive testing and debugging
-   - Validate documentation against established checklists
 
 8. **QA Engineer (Quinn)** 🧪
    ```bash
    claude "use qa-engineer agent: review-code authentication-module"
    claude "use qa-engineer agent: test-strategy user-management-system"
    ```
-   - Perform senior code review and refactoring
-   - Design comprehensive testing strategies
-   - Conduct performance and security audits
 
 ## Agent Coordination Principles
 
@@ -396,18 +449,32 @@ claude "use ux-expert agent: create AI prompt for responsive user dashboard"
 - **Handoff Quality**: Each agent prepares clear outputs for the next phase
 - **Continuous Validation**: Product Owner and Scrum Master validate throughout
 
-#### Legacy Workflow Examples
-#### Full Development Cycle
-1. **Planning**: `product-manager agent: document-project` → `analyst agent: create-doc`
-2. **Story Creation**: `scrum-master agent: create-story` → `scrum-master agent: validate-story`
-3. **Development**: `developer agent: develop-story` → `qa-engineer agent: review-code`
-4. **Review**: `scrum-master agent: review-story` → `product-owner agent: review-artifacts`
+## Updating Agents
 
-#### Design to Development
-1. **Research**: `ux-expert agent: user-research` → `ux-expert agent: design-wireframe`
-2. **UI Generation**: `ux-expert agent: ai-ui-prompt` → Use with AI tools
-3. **Architecture**: `architect agent: design-system` → `architect agent: design-api`
-4. **Implementation**: `developer agent: develop-story`
+Keep your agents up to date with the latest enhancements:
+
+### Option 1: Using the `/agents-update` Command (Recommended)
+```bash
+# Run the update command from within Claude Code
+/agents-update
+```
+
+### Option 2: Re-run the Installation Script
+```bash
+# One-line update to latest version
+curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh | bash -s -- --from-github
+
+# Or check for updates first
+curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh | bash -s -- --check-updates
+```
+
+### Option 3: Manual Update
+```bash
+# Download script and run manually
+curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh -o install-agents.sh
+chmod +x install-agents.sh
+./install-agents.sh --from-github
+```
 
 ## Quick Reference
 
@@ -440,8 +507,7 @@ Select 1-9 or just type your question/feedback:
 ## Troubleshooting
 
 ### Agent Not Responding as Expected
-- Make sure you're in the test-project directory
-- Verify the agent exists: `ls .claude/agents/`
+- Make sure agents are properly installed: `ls ~/.claude/agents/`
 - Try: `claude --print "list available subagents"`
 
 ### Interactive Sessions Timing Out
@@ -454,4 +520,18 @@ Select 1-9 or just type your question/feedback:
 - Don't try to skip the interactive process
 - Engage with the questions and options provided
 
-The enhanced agents now provide sophisticated workflows within Claude Code, enabling advanced development processes with proper user interaction, document generation, and quality assurance!
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+The enhanced agents provide sophisticated workflows within Claude Code, enabling advanced development processes with proper user interaction, document generation, and quality assurance!

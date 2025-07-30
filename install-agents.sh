@@ -1,20 +1,19 @@
 #!/bin/bash
 
 # Claude Code Agents Installation Script
-# Installs agents from local folder to system Claude Code agents directory
+# Installs agents from local folder or GitHub releases to Claude Code agents directory
 
 set -e
 
 # Configuration
-LOCAL_AGENTS_DIR="./claude-code-agents/agents"
-# Default to test project if it exists, otherwise use system directory
-if [ -d "./test-project" ]; then
-    SYSTEM_AGENTS_DIR="./test-project/.claude/agents"
-    BACKUP_DIR="./test-project/.claude/agents-backup-$(date +%Y%m%d-%H%M%S)"
-else
-    SYSTEM_AGENTS_DIR="$HOME/.claude/agents"
-    BACKUP_DIR="$HOME/.claude/agents-backup-$(date +%Y%m%d-%H%M%S)"
-fi
+GITHUB_REPO="vajoshi/claude-agents"  # Update this with your actual repo
+LOCAL_AGENTS_DIR="./claude/agents"
+DOWNLOAD_DIR="/tmp/claude-agents-download"
+
+# Use system directory for Claude Code agents
+CLAUDE_DIR="$HOME/.claude"
+BACKUP_DIR="$CLAUDE_DIR/agents-backup-$(date +%Y%m%d-%H%M%S)"
+SYSTEM_AGENTS_DIR="$CLAUDE_DIR/agents"
 
 # Colors for output
 RED='\033[0;31m'
@@ -40,30 +39,110 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# GitHub functions
+get_latest_release() {
+    local repo="$1"
+    local api_url="https://api.github.com/repos/$repo/releases/latest"
+    
+    if command -v curl >/dev/null 2>&1; then
+        curl -s "$api_url" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+    elif command -v wget >/dev/null 2>&1; then
+        wget -qO- "$api_url" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+    else
+        log_error "Neither curl nor wget is available for downloading"
+        return 1
+    fi
+}
+
+download_and_extract_release() {
+    local repo="$1"
+    local tag="$2"
+    local download_url="https://github.com/$repo/releases/download/$tag/claude-agents-$tag.zip"
+    
+    log_info "Downloading release $tag from GitHub..."
+    
+    # Clean and create download directory
+    rm -rf "$DOWNLOAD_DIR"
+    mkdir -p "$DOWNLOAD_DIR"
+    
+    # Download the release
+    if command -v curl >/dev/null 2>&1; then
+        if ! curl -L -o "$DOWNLOAD_DIR/claude-agents.zip" "$download_url"; then
+            log_error "Failed to download release from $download_url"
+            return 1
+        fi
+    elif command -v wget >/dev/null 2>&1; then
+        if ! wget -O "$DOWNLOAD_DIR/claude-agents.zip" "$download_url"; then
+            log_error "Failed to download release from $download_url"
+            return 1
+        fi
+    else
+        log_error "Neither curl nor wget is available for downloading"
+        return 1
+    fi
+    
+    # Check if unzip is available
+    if ! command -v unzip >/dev/null 2>&1; then
+        log_error "unzip command not found. Please install unzip to continue."
+        return 1
+    fi
+    
+    # Extract the zip file
+    log_info "Extracting downloaded release..."
+    if ! unzip -q "$DOWNLOAD_DIR/claude-agents.zip" -d "$DOWNLOAD_DIR"; then
+        log_error "Failed to extract downloaded file"
+        return 1
+    fi
+    
+    # Verify agents directory exists in extracted content
+    if [ ! -d "$DOWNLOAD_DIR/agents" ]; then
+        log_error "agents directory not found in downloaded release"
+        return 1
+    fi
+    
+    log_success "Successfully downloaded and extracted release $tag"
+    return 0
+}
+
+get_installed_version() {
+    local version_file="$CLAUDE_DIR/VERSION"
+    if [ -f "$version_file" ]; then
+        cat "$version_file"
+    else
+        echo "unknown"
+    fi
+}
+
 # Check if local agents directory exists
 check_local_agents() {
     if [ ! -d "$LOCAL_AGENTS_DIR" ]; then
         log_error "Local agents directory not found: $LOCAL_AGENTS_DIR"
         log_info "Please ensure you're running this script from the project root directory"
-        exit 1
+        return 1
     fi
     
-    local agent_count=$(find "$LOCAL_AGENTS_DIR" -mindepth 1 -maxdepth 1 -type d | wc -l)
+    local agent_count=$(find "$LOCAL_AGENTS_DIR" -name "*.md" | wc -l)
     if [ "$agent_count" -eq 0 ]; then
-        log_error "No agents found in $LOCAL_AGENTS_DIR"
-        exit 1
+        log_error "No agent files found in $LOCAL_AGENTS_DIR"
+        return 1
     fi
     
-    log_info "Found $agent_count agents to install"
+    log_info "Found $agent_count agent files to install"
+    return 0
 }
 
-# Create system agents directory if it doesn't exist
+# Create system directories if they don't exist
 setup_system_directory() {
+    if [ ! -d "$CLAUDE_DIR" ]; then
+        log_info "Creating Claude directory: $CLAUDE_DIR"
+        mkdir -p "$CLAUDE_DIR"
+    fi
+    
     if [ ! -d "$SYSTEM_AGENTS_DIR" ]; then
-        log_info "Creating system agents directory: $SYSTEM_AGENTS_DIR"
+        log_info "Creating agents directory: $SYSTEM_AGENTS_DIR"
         mkdir -p "$SYSTEM_AGENTS_DIR"
     else
-        log_info "System agents directory exists: $SYSTEM_AGENTS_DIR"
+        log_info "Agents directory exists: $SYSTEM_AGENTS_DIR"
     fi
 }
 
@@ -78,26 +157,27 @@ backup_existing_agents() {
     fi
 }
 
-# Install agents
-install_agents() {
-    log_info "Installing agents from $LOCAL_AGENTS_DIR to $SYSTEM_AGENTS_DIR"
+# Install agents from local directory
+install_agents_local() {
+    local source_dir="$LOCAL_AGENTS_DIR"
+    log_info "Installing agents from $source_dir to $SYSTEM_AGENTS_DIR"
     
-    for agent_dir in "$LOCAL_AGENTS_DIR"/*; do
-        if [ -d "$agent_dir" ]; then
-            agent_name=$(basename "$agent_dir")
+    for agent_file in "$source_dir"/*.md; do
+        if [ -f "$agent_file" ]; then
+            agent_name=$(basename "$agent_file")
             
-            # Skip template and README
-            if [ "$agent_name" = "_template.md" ] || [ "$agent_name" = "README.md" ]; then
+            # Skip template files
+            if [[ "$agent_name" == "_template.md" ]] || [[ "$agent_name" == "README.md" ]]; then
                 continue
             fi
             
             log_info "Installing agent: $agent_name"
             
-            # Copy agent directory
-            cp -r "$agent_dir" "$SYSTEM_AGENTS_DIR/"
+            # Copy agent file
+            cp "$agent_file" "$SYSTEM_AGENTS_DIR/"
             
             # Verify installation
-            if [ -d "$SYSTEM_AGENTS_DIR/$agent_name" ]; then
+            if [ -f "$SYSTEM_AGENTS_DIR/$agent_name" ]; then
                 log_success "Successfully installed: $agent_name"
             else
                 log_error "Failed to install: $agent_name"
@@ -106,40 +186,57 @@ install_agents() {
     done
 }
 
+# Install agents from GitHub download
+install_agents_github() {
+    local source_dir="$DOWNLOAD_DIR/agents"
+    log_info "Installing agents from downloaded release to $SYSTEM_AGENTS_DIR"
+    
+    for agent_file in "$source_dir"/*.md; do
+        if [ -f "$agent_file" ]; then
+            agent_name=$(basename "$agent_file")
+            
+            log_info "Installing agent: $agent_name"
+            
+            # Copy agent file
+            cp "$agent_file" "$SYSTEM_AGENTS_DIR/"
+            
+            # Verify installation
+            if [ -f "$SYSTEM_AGENTS_DIR/$agent_name" ]; then
+                log_success "Successfully installed: $agent_name"
+            else
+                log_error "Failed to install: $agent_name"
+            fi
+        fi
+    done
+    
+    # Copy VERSION file if it exists
+    if [ -f "$DOWNLOAD_DIR/VERSION" ]; then
+        cp "$DOWNLOAD_DIR/VERSION" "$CLAUDE_DIR/"
+        log_info "Installed version information"
+    fi
+}
+
 # Verify installation
 verify_installation() {
     log_info "Verifying installation..."
     
     local installed_count=0
-    local total_agents=0
     
-    for agent_dir in "$LOCAL_AGENTS_DIR"/*; do
-        if [ -d "$agent_dir" ]; then
-            agent_name=$(basename "$agent_dir")
-            
-            # Skip template and README
-            if [ "$agent_name" = "_template.md" ] || [ "$agent_name" = "README.md" ]; then
-                continue
-            fi
-            
-            total_agents=$((total_agents + 1))
-            
-            if [ -d "$SYSTEM_AGENTS_DIR/$agent_name" ]; then
+    if [ -d "$SYSTEM_AGENTS_DIR" ]; then
+        for agent_file in "$SYSTEM_AGENTS_DIR"/*.md; do
+            if [ -f "$agent_file" ]; then
+                agent_name=$(basename "$agent_file" .md)
                 installed_count=$((installed_count + 1))
                 log_success "✓ $agent_name installed"
-            else
-                log_error "✗ $agent_name missing"
             fi
-        fi
-    done
+        done
+    fi
     
-    log_info "Installation summary: $installed_count/$total_agents agents installed"
-    
-    if [ "$installed_count" -eq "$total_agents" ]; then
-        log_success "All agents installed successfully!"
+    if [ "$installed_count" -gt 0 ]; then
+        log_success "$installed_count agents installed successfully!"
         return 0
     else
-        log_error "Some agents failed to install"
+        log_error "No agents were installed"
         return 1
     fi
 }
@@ -147,42 +244,127 @@ verify_installation() {
 # List installed agents
 list_agents() {
     log_info "Installed agents:"
-    for agent_dir in "$SYSTEM_AGENTS_DIR"/*; do
-        if [ -d "$agent_dir" ]; then
-            agent_name=$(basename "$agent_dir")
+    
+    if [ ! -d "$SYSTEM_AGENTS_DIR" ] || [ -z "$(ls -A "$SYSTEM_AGENTS_DIR" 2>/dev/null)" ]; then
+        log_warning "No agents installed"
+        return 1
+    fi
+    
+    for agent_file in "$SYSTEM_AGENTS_DIR"/*.md; do
+        if [ -f "$agent_file" ]; then
+            agent_name=$(basename "$agent_file" .md)
             
-            # Check if subagent.md exists
-            if [ -f "$agent_dir/subagent.md" ]; then
-                # Extract agent description from subagent.md
-                description=$(grep -A 1 "## Description" "$agent_dir/subagent.md" 2>/dev/null | tail -n 1 | sed 's/^[[:space:]]*//' || echo "No description available")
-                echo -e "  ${GREEN}$agent_name${NC}: $description"
-            else
-                echo -e "  ${YELLOW}$agent_name${NC}: (missing subagent.md)"
-            fi
+            # Try to extract description from the agent file
+            description=$(grep -m1 "^*.*specialist" "$agent_file" 2>/dev/null | sed 's/^\*//; s/^[[:space:]]*//' || echo "Claude Code agent")
+            echo -e "  ${GREEN}$agent_name${NC}: $description"
         fi
     done
+    
+    # Show version if available
+    local version=$(get_installed_version)
+    if [ "$version" != "unknown" ]; then
+        echo -e "\n${BLUE}Installed version:${NC} $version"
+    fi
 }
 
-# Main execution
-main() {
-    log_info "Starting Claude Code Agents Installation"
-    log_info "=================================="
+# Main execution for local installation
+main_local() {
+    log_info "Starting Claude Code Agents Installation (Local)"
+    log_info "=============================================="
     
-    check_local_agents
+    if ! check_local_agents; then
+        log_error "Local installation failed - agents not found"
+        exit 1
+    fi
+    
     setup_system_directory
     backup_existing_agents
-    install_agents
+    install_agents_local
     
     if verify_installation; then
         echo
         list_agents
         echo
-        log_success "Installation completed successfully!"
+        log_success "Local installation completed successfully!"
         log_info "You can now use these agents with Claude Code"
-        log_info "Example: claude-code --agent analyst"
+        log_info "Example: claude \"use analyst agent: help\""
     else
         log_error "Installation completed with errors"
         exit 1
+    fi
+}
+
+# Main execution for GitHub installation
+main_github() {
+    local tag="$1"
+    
+    log_info "Starting Claude Code Agents Installation (GitHub)"
+    log_info "==============================================="
+    
+    if [ -z "$tag" ]; then
+        log_info "Fetching latest release information..."
+        tag=$(get_latest_release "$GITHUB_REPO")
+        if [ -z "$tag" ]; then
+            log_error "Failed to get latest release information"
+            exit 1
+        fi
+        log_info "Latest release: $tag"
+    fi
+    
+    # Check if we already have this version
+    local current_version=$(get_installed_version)
+    if [ "$current_version" = "$tag" ]; then
+        log_info "Version $tag is already installed"
+        list_agents
+        exit 0
+    fi
+    
+    if ! download_and_extract_release "$GITHUB_REPO" "$tag"; then
+        log_error "Failed to download release"
+        exit 1
+    fi
+    
+    setup_system_directory
+    backup_existing_agents
+    install_agents_github
+    
+    if verify_installation; then
+        echo
+        list_agents
+        echo
+        log_success "GitHub installation completed successfully!"
+        log_info "You can now use these agents with Claude Code"
+        log_info "Example: claude \"use analyst agent: help\""
+    else
+        log_error "Installation completed with errors"
+        exit 1
+    fi
+    
+    # Cleanup
+    rm -rf "$DOWNLOAD_DIR"
+}
+
+# Check for updates
+check_updates() {
+    log_info "Checking for updates..."
+    
+    local current_version=$(get_installed_version)
+    local latest_version=$(get_latest_release "$GITHUB_REPO")
+    
+    if [ -z "$latest_version" ]; then
+        log_error "Failed to check for updates"
+        exit 1
+    fi
+    
+    echo "Current version: $current_version"
+    echo "Latest version: $latest_version"
+    
+    if [ "$current_version" = "$latest_version" ]; then
+        log_success "You have the latest version!"
+    else
+        log_info "Update available: $current_version → $latest_version"
+        echo ""
+        echo "To update, run: $0 --from-github"
     fi
 }
 
@@ -194,26 +376,56 @@ case "${1:-}" in
         echo "Usage: $0 [OPTIONS]"
         echo ""
         echo "Options:"
-        echo "  --help, -h     Show this help message"
-        echo "  --dry-run      Show what would be installed without making changes"
-        echo "  --list         List currently installed agents"
+        echo "  --help, -h         Show this help message"
+        echo "  --from-github      Install latest release from GitHub (recommended)"
+        echo "  --from-github TAG  Install specific release tag from GitHub"
+        echo "  --local            Install from local ./claude/agents directory"
+        echo "  --check-updates    Check for updates without installing"
+        echo "  --list             List currently installed agents"
+        echo "  --dry-run          Show what would be installed without making changes"
         echo ""
-        echo "This script installs Claude Code agents from the local ./claude-code-agents/agents"
-        echo "directory to the system Claude Code agents directory at ~/.config/claude-code/agents"
+        echo "Installation location:"
+        echo "  System: ~/.claude/agents"
+        echo ""
+        echo "Examples:"
+        echo "  $0 --from-github              # Install latest release"
+        echo "  $0 --from-github v1.2.0       # Install specific version"
+        echo "  $0 --local                    # Install from local files"
+        echo "  $0 --check-updates            # Check for updates"
         exit 0
+        ;;
+    --from-github)
+        if [ -n "$2" ]; then
+            main_github "$2"
+        else
+            main_github
+        fi
+        ;;
+    --local)
+        main_local
+        ;;
+    --check-updates)
+        check_updates
         ;;
     --dry-run)
         log_info "DRY RUN MODE - No changes will be made"
-        check_local_agents
-        log_info "Would install the following agents:"
-        for agent_dir in "$LOCAL_AGENTS_DIR"/*; do
-            if [ -d "$agent_dir" ]; then
-                agent_name=$(basename "$agent_dir")
-                if [ "$agent_name" != "_template.md" ] && [ "$agent_name" != "README.md" ]; then
+        if check_local_agents; then
+            log_info "Would install the following agents from local directory:"
+            for agent_file in "$LOCAL_AGENTS_DIR"/*.md; do
+                if [ -f "$agent_file" ]; then
+                    agent_name=$(basename "$agent_file" .md)
                     echo "  - $agent_name"
                 fi
-            fi
-        done
+            done
+        fi
+        
+        log_info "Latest release from GitHub:"
+        local latest=$(get_latest_release "$GITHUB_REPO")
+        if [ -n "$latest" ]; then
+            echo "  - $latest"
+        else
+            echo "  - Unable to fetch release information"
+        fi
         exit 0
         ;;
     --list)
@@ -225,7 +437,17 @@ case "${1:-}" in
         exit 0
         ;;
     "")
-        main
+        # Default behavior - prefer GitHub if possible, fallback to local
+        log_info "No installation method specified. Checking GitHub for latest release..."
+        if get_latest_release "$GITHUB_REPO" >/dev/null 2>&1; then
+            log_info "GitHub releases available. Using --from-github (recommended)"
+            log_info "For local installation, use: $0 --local"
+            echo ""
+            main_github
+        else
+            log_warning "GitHub releases not available. Falling back to local installation..."
+            main_local
+        fi
         ;;
     *)
         log_error "Unknown option: $1"
