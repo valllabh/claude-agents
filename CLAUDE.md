@@ -1,47 +1,108 @@
-# BMAD to Claude Code Migration
+# Enhanced Claude Code Agents
 
-Convert BMAD agents to Claude Code subagents through research, analysis, and one-time conversion.
+Sophisticated Claude Code subagents with enhanced workflows and interactive capabilities.
 
-## Setup
+## Project Structure
 
-Place your BMAD agents in `bmad-commands/` directory.
-
-## Migration Prompt
-
-```bash
-claude-code "BMAD to Claude Code Migration
-
-RESEARCH:
-1. Study BMAD framework from https://github.com/bmadcode/BMAD-METHOD
-   - Understand agent structure, task definitions, configuration format
-   - Learn how tasks are organized and executed
-   - Identify tools and capabilities used
-
-2. Research Claude Code subagents
-   - Learn subagent architecture and file structure
-   - Understand command definitions and tool integration
-   - Study configuration formats and best practices
-
-ANALYSIS:
-3. Analyze all BMAD agents in bmad-commands/ directory
-   - Inventory every agent, task, parameter, and tool
-   - Document current functionality and dependencies
-
-CONVERSION:
-4. Convert all BMAD agents to Claude Code subagents
-   - Create equivalent subagents in claude-code-agents/ directory
-   - Map every BMAD task to Claude Code command
-   - Preserve all parameters and functionality
-   - Configure appropriate tools for each command
-   - Maintain proper subagent structure
-
-VALIDATION:
-5. Generate conversion report comparing BMAD tasks to Claude Code commands
-   - Verify all tasks converted
-   - Confirm tool mappings
-   - Flag any missing functionality"
+```
+claude-agents/
+├── agents/                    # Agent definitions
+│   ├── analyst.md
+│   ├── architect.md
+│   ├── developer.md
+│   ├── product-manager.md
+│   ├── product-owner.md
+│   ├── qa-engineer.md
+│   ├── scrum-master.md
+│   └── ux-expert.md
+├── test-project/             # Test environment
+└── AGENT-USAGE-GUIDE.md     # Agent usage documentation
 ```
 
-## Output
+## Agent Capabilities
 
-Converted subagents will be created in `claude-code-agents/` directory, ready for use with Claude Code.
+Enhanced agents include sophisticated workflows with:
+- Interactive elicitation (1-9 numbered options)
+- Sequential task execution with validation
+- Template-driven document generation
+- Comprehensive quality assurance processes
+- Brownfield project support
+- AI-optimized workflows
+
+## Testing Workflow
+
+1. **Navigate to test project**:
+   ```bash
+   cd test-project
+   ```
+
+2. **Initialize Claude Code**:
+   ```bash
+   claude init
+   ```
+
+3. **Copy agents to test project**:
+   ```bash
+   cp -r ../agents .claude/
+   ```
+
+4. **Copy usage documentation**:
+   ```bash
+   cp ../AGENT-USAGE-GUIDE.md .
+   ```
+
+5. **Invoke agents in optimal sequence**:
+
+## Agent Sequence for New Projects
+
+### Phase 1: Discovery & Planning
+1. **Product Manager (John)** 📋
+   - Create PRDs and product documentation
+   - Conduct market research and feature prioritization
+   - Commands: `create-doc`, `research`, `document-project`
+
+2. **Business Analyst (Mary)** 📊
+   - Facilitate brainstorming and ideation
+   - Create project briefs and competitive analysis
+   - Commands: `brainstorm`, `create-doc`, `research-prompt`
+
+### Phase 2: Design & Architecture
+3. **UX Expert (Sally)** 🎨
+   - Design wireframes and user interfaces
+   - Create frontend specifications and accessibility audits
+   - Commands: `design-wireframe`, `design-ui`, `ai-ui-prompt`
+
+4. **System Architect (Winston)** 🏗️
+   - Design system architecture and infrastructure
+   - Select technologies and create ADRs
+   - Commands: `design-system`, `select-technology`, `design-api`
+
+### Phase 3: Development Planning
+5. **Product Owner (Sarah)** 📝
+   - Refine backlog and create user stories
+   - Plan sprints and define acceptance criteria
+   - Commands: `refine-backlog`, `create-story`, `plan-sprint`
+
+6. **Scrum Master (Bob)** 🏃
+   - Break down epics into implementable stories
+   - Validate story completeness and clarity
+   - Commands: `create-story`, `validate-story`, `break-down-epic`
+
+### Phase 4: Implementation & Quality
+7. **Developer (James)** 💻
+   - Implement story requirements sequentially
+   - Execute comprehensive testing and debugging
+   - Commands: `develop-story`, `debug`, `refactor`
+
+8. **QA Engineer (Quinn)** 🧪
+   - Perform senior code review and refactoring
+   - Design comprehensive testing strategies
+   - Commands: `review-code`, `refactor`, `test-strategy`
+
+## Agent Coordination Principles
+
+- **Sequential Flow**: Follow the numbered sequence for new projects
+- **Iterative Loops**: Return to earlier phases as needed for refinement
+- **Parallel Work**: UX Expert and System Architect can work in parallel after initial planning
+- **Handoff Quality**: Each agent prepares clear outputs for the next phase
+- **Continuous Validation**: Product Owner and Scrum Master validate throughout

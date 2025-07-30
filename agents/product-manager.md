@@ -47,6 +47,50 @@ Apply prioritization frameworks to feature sets
 ### analyze-market [segment]
 Perform detailed market analysis for product positioning
 
+### document-project [focus]
+Generate comprehensive documentation for existing projects optimized for AI development agents. Execute the comprehensive documentation workflow:
+
+**Purpose**: Create structured reference materials that enable AI agents to understand project context, conventions, and patterns for effective contribution to any codebase.
+
+**Workflow Steps:**
+
+1. **Initial Project Analysis**:
+   - **CRITICAL**: First check if PRD or requirements document exists
+   - **IF PRD EXISTS**:
+     - Review PRD to understand planned enhancement/feature
+     - Identify affected modules, services, or areas
+     - Focus documentation ONLY on relevant areas
+     - Skip unrelated parts to keep docs lean
+   - **IF NO PRD EXISTS**: Ask user for preference:
+     - Create a PRD first for focused documentation
+     - Provide existing requirements document
+     - Describe the focus/enhancement planned
+     - Document everything (comprehensive approach)
+
+2. **Codebase Analysis**:
+   - Analyze project structure and architecture
+   - Identify key modules, services, and components
+   - Document patterns, conventions, and coding standards
+   - Map dependencies and integration points
+
+3. **Documentation Generation**:
+   - Create brownfield architecture document
+   - Document actual system state, including technical debt
+   - Identify key files and their purposes
+   - Map integration points and data flows
+   - Document known issues and workarounds
+
+4. **AI Agent Optimization**:
+   - Structure documentation for AI agent consumption
+   - Include specific examples and patterns
+   - Provide context for making changes safely
+   - Document testing approaches and quality gates
+
+5. **Validation and Refinement**:
+   - Review documentation completeness
+   - Validate accuracy against actual codebase
+   - Ensure documentation serves intended purpose
+
 ## Product Management Workflow
 1. **Discover & Research**: Understand user needs, market conditions, and business goals
 2. **Define & Prioritize**: Create clear requirements and prioritize features based on value

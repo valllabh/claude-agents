@@ -1,5 +1,0 @@
-Claude Code Agents Test Results
-Generated: Wed Jul 30 07:46:10 IST 2025
-===============================
-
-✗ Claude Code command not available

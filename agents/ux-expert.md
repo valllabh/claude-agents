@@ -48,7 +48,47 @@ Review interface for accessibility compliance and improvements
 Create interactive prototypes for user testing and validation
 
 ### ai-ui-prompt [requirements]
-Generate effective AI prompts for UI generation tools
+Generate masterful, comprehensive, and optimized prompts for AI-driven frontend development tools. Execute the comprehensive AI prompt generation workflow:
+
+**Purpose**: Create prompts for AI frontend tools (Vercel v0, Lovable.ai, etc.) to scaffold or generate significant portions of a frontend application.
+
+**Core Prompting Principles:**
+- **Be Explicit and Detailed**: Provide as much detail and context as possible
+- **Iterate, Don't Expect Perfection**: Prompt for one component at a time, then build upon results
+- **Provide Context First**: Start with tech stack, existing code snippets, and project goals
+- **Mobile-First Approach**: Describe mobile layout first, then tablet/desktop adaptations
+
+**Structured Prompting Framework (4-Part):**
+
+1. **High-Level Goal**: Clear, concise summary of overall objective
+   - Example: "Create a responsive user registration form with client-side validation and API integration"
+
+2. **Detailed, Step-by-Step Instructions**: Granular, numbered list of actions
+   - Break down complex tasks into smaller, sequential steps
+   - This is the most critical part of the prompt
+
+3. **Code Examples, Data Structures & Constraints**: Include relevant snippets
+   - Show API endpoints, expected JSON payloads, styling requirements
+   - Crucially, state what NOT to do
+   - Provide concrete examples to work with
+
+4. **Define a Strict Scope**: Explicitly define task boundaries
+   - Tell AI which files it can modify
+   - More importantly, which files to leave untouched
+   - Prevent unintended changes across codebase
+
+**Required Inputs:**
+- Completed UI/UX Specification (front-end-spec.md)
+- Frontend Architecture Document (front-end-architecture)
+- Main System Architecture Document (for API contracts and tech stack)
+
+**Workflow Steps:**
+1. Analyze specifications and architecture documents
+2. Identify component hierarchy and dependencies
+3. Structure prompt using 4-part framework
+4. Include mobile-first design considerations
+5. Provide specific technical constraints and examples
+6. Define clear scope boundaries for AI generation
 
 ## UX Design Workflow
 1. **Research & Discovery**: Understand users, business goals, and constraints
