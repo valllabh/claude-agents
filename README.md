@@ -1,30 +1,46 @@
 # Enhanced Claude Code Agents
 
-Sophisticated Claude Code subagents with enhanced workflows and interactive capabilities for comprehensive software development.
+Sophisticated Claude Code subagents with enhanced workflows and interactive capabilities for comprehensive software development. **Designed specifically for use with Claude Code CLI.**
 
 ## Overview
 
-This project provides 8 enhanced Claude Code agents that work together to support the complete software development lifecycle - from discovery and planning through implementation and quality assurance. Each agent has been enhanced with sophisticated task implementations, interactive elicitation, and structured workflows.
+This project provides 8 enhanced Claude Code agents designed specifically for **Claude Code CLI** that work together to support the complete software development lifecycle - from discovery and planning through implementation and quality assurance. Each agent has been enhanced with sophisticated task implementations, interactive elicitation, and structured workflows.
 
-## 🚀 Quick Start
+### Prerequisites
+- **Claude Code CLI** must be installed and configured
+- Agents work exclusively with Claude Code's subagent system
+- Compatible with Claude Code's interactive command interface
 
-Get started with enhanced Claude Code agents in seconds:
+## 🚀 Quick Start with Claude Code
 
+### Step 1: Install Claude Code CLI
+First, ensure you have Claude Code CLI installed:
+```bash
+# Install Claude Code CLI (if not already installed)
+# Follow instructions at: https://docs.anthropic.com/en/docs/claude-code
+```
+
+### Step 2: Install Enhanced Agents
 ```bash
 # One-line install - download and install latest agents
 curl -fsSL https://raw.githubusercontent.com/valllabh/claude-agents/main/install-agents.sh | bash -s -- --from-github
 ```
 
-Then use your agents:
+### Step 3: Use Agents in Claude Code
+Open Claude Code and use your agents:
 ```bash
+# Start Claude Code in your project directory
+claude
+
+# Use agents with Claude Code's subagent syntax
 # Start with analysis and brainstorming
-claude "use analyst agent: brainstorm ways to improve our development process"
+use analyst agent: brainstorm ways to improve our development process
 
 # Create user stories  
-claude "use scrum-master agent: create a story for user authentication"
+use scrum-master agent: create a story for user authentication
 
 # Get AI-optimized UI prompts
-claude "use ux-expert agent: create AI prompt for responsive dashboard"
+use ux-expert agent: create AI prompt for responsive dashboard
 ```
 
 ## Project Structure
@@ -89,9 +105,10 @@ cd claude-agents
 ### Installation Location
 
 All agents are installed to your Claude Code system directory:
-- **System Installation**: `~/.claude/agents/`
+- **System Installation**: `~/.claude/agents/` (Claude Code's agent directory)
 - **Automatic Backup**: Previous versions backed up to `~/.claude/agents-backup-[timestamp]/`
 - **Version Tracking**: Current version stored in `~/.claude/VERSION`
+- **Claude Code Integration**: Agents automatically available in Claude Code CLI
 
 The installer automatically creates the necessary directories and handles backups of existing agents.
 
@@ -118,7 +135,8 @@ All enhanced agents include sophisticated workflows with:
 
 **`create-doc [template]`** - **🚀 Enhanced** Template-driven document creation with interactive elicitation
 ```bash
-claude "use analyst agent: I need to create a project brief document"
+# In Claude Code CLI:
+use analyst agent: I need to create a project brief document
 ```
 - **Features**: Mandatory step-by-step execution, 1-9 elicitation format, detailed rationale
 - **Templates**: project-brief, market-research, competitor-analysis, brainstorming-output
@@ -126,7 +144,8 @@ claude "use analyst agent: I need to create a project brief document"
 
 **`brainstorm [topic]`** - **🚀 Enhanced** Interactive brainstorming sessions
 ```bash
-claude "use analyst agent: brainstorm ways to improve our development process"
+# In Claude Code CLI:
+use analyst agent: brainstorm ways to improve our development process
 ```
 - **4-Step Process**: Session setup → Approach selection → Technique execution → Document output
 - **8 Techniques**: Classic Brainstorming, Mind Mapping, SCAMPER, Six Thinking Hats, Brainwriting, Reverse Brainstorming, Starbursting, Nominal Group Technique
@@ -146,7 +165,7 @@ claude "use analyst agent: brainstorm ways to improve our development process"
 
 **`create-story [epic]`** - **🚀 Enhanced** Create implementation-ready brownfield stories
 ```bash
-claude "use scrum-master agent: create a story for user authentication epic"
+use scrum-master agent: create a story for user authentication epic
 ```
 - **Purpose**: Bridge gap between documentation formats and executable stories
 - **Workflow**: Documentation context check → Story identification → Technical context extraction → Story construction → Validation
@@ -154,13 +173,13 @@ claude "use scrum-master agent: create a story for user authentication epic"
 
 **`validate-story [story]`** - **🚀 Enhanced** Comprehensive story validation
 ```bash
-claude "use scrum-master agent: validate the user registration story"
+use scrum-master agent: validate the user registration story
 ```
 - **Process**: Load configuration → Template completeness → File structure validation → UI/Frontend validation → Acceptance criteria assessment → Risk assessment
 
 **`review-story [story]`** - **🚀 Enhanced** Senior developer code review
 ```bash
-claude "use scrum-master agent: review the completed authentication story"
+use scrum-master agent: review the completed authentication story
 ```
 - **Prerequisites**: Story status "Review", all tasks completed, tests passing
 - **Process**: Read story → Verify implementation → Focus on file list → Senior code review
@@ -186,7 +205,7 @@ claude "use scrum-master agent: review the completed authentication story"
 
 **`develop-story [story-id]`** - **🚀 Enhanced** Sequential story execution with comprehensive implementation
 ```bash
-claude "use developer agent: develop story 1.3 for user dashboard"
+use developer agent: develop story 1.3 for user dashboard
 ```
 - **Purpose**: Identify next logical story and prepare comprehensive, actionable story file
 - **Process**: Load core configuration → Identify next story → Gather requirements → Architecture context → Story construction → Implementation readiness
@@ -194,7 +213,7 @@ claude "use developer agent: develop story 1.3 for user dashboard"
 
 **`execute-checklist [checklist-name]`** - **🚀 Enhanced** Validate documentation against checklists
 ```bash
-claude "use developer agent: execute architecture checklist"
+use developer agent: execute architecture checklist
 ```
 - **Process**: Initial assessment → Checklist selection → Execution mode → Document gathering → Validation → Results summary
 - **Modes**: Interactive (section-by-section) or YOLO (all at once)
@@ -218,7 +237,7 @@ claude "use developer agent: execute architecture checklist"
 
 **`document-project [focus]`** - **🚀 Enhanced** Generate AI-optimized project documentation
 ```bash
-claude "use product-manager agent: document our existing authentication system"
+use product-manager agent: document our existing authentication system
 ```
 - **Purpose**: Create structured reference materials for AI agents to understand project context
 - **Process**: Initial project analysis → Codebase analysis → Documentation generation → AI optimization → Validation
@@ -307,7 +326,7 @@ claude "use product-manager agent: document our existing authentication system"
 
 **`ai-ui-prompt [requirements]`** - **🚀 Enhanced** Generate AI frontend prompts using structured framework
 ```bash
-claude "use ux-expert agent: create AI prompt for user registration form"
+use ux-expert agent: create AI prompt for user registration form
 ```
 - **Purpose**: Create prompts for AI frontend tools (Vercel v0, Lovable.ai, etc.)
 - **4-Part Framework**: High-level goal → Step-by-step instructions → Code examples & constraints → Strict scope definition
@@ -329,7 +348,7 @@ claude "use ux-expert agent: create AI prompt for user registration form"
 
 ### Interactive Brainstorming Session
 ```bash
-claude "use analyst agent: I want to brainstorm ways to reduce customer churn"
+use analyst agent: I want to brainstorm ways to reduce customer churn
 ```
 **Expected Flow:**
 1. Mary asks 4 context questions (topic, constraints, goal, document output)
@@ -339,7 +358,7 @@ claude "use analyst agent: I want to brainstorm ways to reduce customer churn"
 
 ### Story Creation Workflow
 ```bash
-claude "use scrum-master agent: create a story for mobile app authentication"
+use scrum-master agent: create a story for mobile app authentication
 ```
 **Expected Flow:**
 1. Bob checks for available documentation (PRD, architecture, epics)
@@ -350,7 +369,7 @@ claude "use scrum-master agent: create a story for mobile app authentication"
 
 ### AI Frontend Prompt Generation
 ```bash
-claude "use ux-expert agent: create AI prompt for responsive user dashboard"
+use ux-expert agent: create AI prompt for responsive user dashboard
 ```
 **Expected Flow:**
 1. Sally analyzes UI/UX specifications and architecture documents
@@ -366,10 +385,10 @@ claude "use ux-expert agent: create AI prompt for responsive user dashboard"
 1. **Be Specific in Your Requests**
    ```bash
    # Good
-   claude "use analyst agent: brainstorm user onboarding improvements for our mobile app"
+   use analyst agent: brainstorm user onboarding improvements for our mobile app
    
    # Less effective
-   claude "use analyst agent: help me brainstorm"
+   use analyst agent: help me brainstorm
    ```
 
 2. **Engage in the Interactive Process**
@@ -392,53 +411,53 @@ claude "use ux-expert agent: create AI prompt for responsive user dashboard"
 ### Phase 1: Discovery & Planning
 1. **Product Manager (John)** 📋
    ```bash
-   claude "use product-manager agent: document-project for new user management system"
-   claude "use product-manager agent: create-doc prd-template"
+   use product-manager agent: document-project for new user management system
+   use product-manager agent: create-doc prd-template
    ```
 
 2. **Business Analyst (Mary)** 📊
    ```bash
-   claude "use analyst agent: brainstorm user authentication improvements"
-   claude "use analyst agent: create-doc project-brief-tmpl"
+   use analyst agent: brainstorm user authentication improvements
+   use analyst agent: create-doc project-brief-tmpl"
    ```
 
 ### Phase 2: Design & Architecture
 3. **UX Expert (Sally)** 🎨
    ```bash
-   claude "use ux-expert agent: design-wireframe user registration flow"
-   claude "use ux-expert agent: ai-ui-prompt responsive dashboard layout"
+   use ux-expert agent: design-wireframe user registration flow"
+   use ux-expert agent: ai-ui-prompt responsive dashboard layout
    ```
 
 4. **System Architect (Winston)** 🏗️
    ```bash
-   claude "use architect agent: design-system user management requirements"
-   claude "use architect agent: design-api authentication service"
+   use architect agent: design-system user management requirements
+   use architect agent: design-api authentication service
    ```
 
 ### Phase 3: Development Planning
 5. **Product Owner (Sarah)** 📝
    ```bash
-   claude "use product-owner agent: refine-backlog user authentication epic"
-   claude "use product-owner agent: create-story user registration requirement"
+   use product-owner agent: refine-backlog user authentication epic
+   use product-owner agent: create-story user registration requirement
    ```
 
 6. **Scrum Master (Bob)** 🏃
    ```bash
-   claude "use scrum-master agent: create-story user authentication epic"
-   claude "use scrum-master agent: validate-story user-registration-story"
+   use scrum-master agent: create-story user authentication epic
+   use scrum-master agent: validate-story user-registration-story
    ```
 
 ### Phase 4: Implementation & Quality
 7. **Developer (James)** 💻
    ```bash
-   claude "use developer agent: develop-story 1.1"
-   claude "use developer agent: execute-checklist architecture-checklist"
+   use developer agent: develop-story 1.1"
+   use developer agent: execute-checklist architecture-checklist
    ```
 
 8. **QA Engineer (Quinn)** 🧪
    ```bash
-   claude "use qa-engineer agent: review-code authentication-module"
-   claude "use qa-engineer agent: test-strategy user-management-system"
+   use qa-engineer agent: review-code authentication-module
+   use qa-engineer agent: test-strategy user-management-system
    ```
 
 ## Agent Coordination Principles
@@ -455,7 +474,7 @@ Keep your agents up to date with the latest enhancements:
 
 ### Option 1: Using the `/agents-update` Command (Recommended)
 ```bash
-# Run the update command from within Claude Code
+# Run the update command from within Claude Code CLI
 /agents-update
 ```
 
@@ -507,11 +526,18 @@ Select 1-9 or just type your question/feedback:
 ## Troubleshooting
 
 ### Agent Not Responding as Expected
-- Make sure agents are properly installed: `ls ~/.claude/agents/`
-- Try: `claude --print "list available subagents"`
+- Ensure Claude Code CLI is properly installed and running
+- Check agents are installed: `ls ~/.claude/agents/`
+- In Claude Code, try: `list available subagents`
+- Restart Claude Code if agents don't appear
+
+### Claude Code Integration Issues
+- Make sure you're using Claude Code CLI (not regular Claude)
+- Use the correct syntax: `use [agent-name] agent: [command]`
+- Ensure agents are in the correct directory: `~/.claude/agents/`
 
 ### Interactive Sessions Timing Out
-- Use shorter, more focused requests
+- Use shorter, more focused requests within Claude Code
 - Break complex tasks into smaller steps
 - Save progress frequently during long sessions
 
@@ -534,4 +560,15 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-The enhanced agents provide sophisticated workflows within Claude Code, enabling advanced development processes with proper user interaction, document generation, and quality assurance!
+The enhanced agents provide sophisticated workflows within **Claude Code CLI**, enabling advanced development processes with proper user interaction, document generation, and quality assurance!
+
+## Claude Code CLI Integration
+
+These agents are specifically designed for Claude Code's subagent system:
+- **Native Integration**: Seamlessly work with Claude Code's `use agent:` syntax
+- **Interactive Workflows**: Support Claude Code's interactive session capabilities  
+- **File System Access**: Leverage Claude Code's file reading and writing capabilities
+- **Project Context**: Automatically understand your project structure through Claude Code
+- **Command Integration**: Include custom `/agents-update` command for Claude Code CLI
+
+**Note**: These agents require Claude Code CLI and will not work with regular Claude chat interface.

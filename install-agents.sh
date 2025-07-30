@@ -10,10 +10,10 @@ GITHUB_REPO="valllabh/claude-agents"
 LOCAL_AGENTS_DIR="./claude/agents"
 DOWNLOAD_DIR="/tmp/claude-agents-download"
 
-# Use system directory for Claude Code agents
-CLAUDE_DIR="$HOME/.claude"
-BACKUP_DIR="$CLAUDE_DIR/agents-backup-$(date +%Y%m%d-%H%M%S)"
-SYSTEM_AGENTS_DIR="$CLAUDE_DIR/agents"
+# Installation directories will be set by user choice
+CLAUDE_DIR=""
+BACKUP_DIR=""
+SYSTEM_AGENTS_DIR=""
 
 # Colors for output
 RED='\033[0;31m'
@@ -111,6 +111,51 @@ get_installed_version() {
     else
         echo "unknown"
     fi
+}
+
+# Prompt user for installation location
+prompt_installation_location() {
+    local project_claude_dir="./.claude"
+    local user_claude_dir="$HOME/.claude"
+    
+    echo ""
+    log_info "Choose installation location for Claude Code agents:"
+    echo ""
+    echo "1. Current project directory: $project_claude_dir/agents"
+    echo "   - Agents available only in this project"
+    echo "   - Good for project-specific agent configurations"
+    echo ""
+    echo "2. User system directory: $user_claude_dir/agents"
+    echo "   - Agents available globally for all Claude Code sessions"
+    echo "   - Recommended for general use"
+    echo ""
+    
+    while true; do
+        printf "Enter your choice (1 or 2): "
+        read -r choice
+        
+        case "$choice" in
+            1)
+                CLAUDE_DIR="$project_claude_dir"
+                SYSTEM_AGENTS_DIR="$CLAUDE_DIR/agents"
+                BACKUP_DIR="$CLAUDE_DIR/agents-backup-$(date +%Y%m%d-%H%M%S)"
+                log_info "Selected: Project directory ($CLAUDE_DIR)"
+                break
+                ;;
+            2)
+                CLAUDE_DIR="$user_claude_dir"
+                SYSTEM_AGENTS_DIR="$CLAUDE_DIR/agents"
+                BACKUP_DIR="$CLAUDE_DIR/agents-backup-$(date +%Y%m%d-%H%M%S)"
+                log_info "Selected: User system directory ($CLAUDE_DIR)"
+                break
+                ;;
+            *)
+                log_warning "Invalid choice. Please enter 1 or 2."
+                ;;
+        esac
+    done
+    
+    echo ""
 }
 
 # Check if local agents directory exists
@@ -277,6 +322,7 @@ main_local() {
         exit 1
     fi
     
+    prompt_installation_location
     setup_system_directory
     backup_existing_agents
     install_agents_local
@@ -310,6 +356,8 @@ main_github() {
         fi
         log_info "Latest release: $tag"
     fi
+    
+    prompt_installation_location
     
     # Check if we already have this version
     local current_version=$(get_installed_version)
@@ -348,7 +396,18 @@ main_github() {
 check_updates() {
     log_info "Checking for updates..."
     
-    local current_version=$(get_installed_version)
+    # Check both possible locations
+    local user_version="unknown"
+    local project_version="unknown"
+    
+    if [ -f "$HOME/.claude/VERSION" ]; then
+        user_version=$(cat "$HOME/.claude/VERSION")
+    fi
+    
+    if [ -f "./.claude/VERSION" ]; then
+        project_version=$(cat "./.claude/VERSION")
+    fi
+    
     local latest_version=$(get_latest_release "$GITHUB_REPO")
     
     if [ -z "$latest_version" ]; then
@@ -356,15 +415,26 @@ check_updates() {
         exit 1
     fi
     
-    echo "Current version: $current_version"
     echo "Latest version: $latest_version"
+    echo "User system version: $user_version"
+    echo "Project version: $project_version"
     
-    if [ "$current_version" = "$latest_version" ]; then
-        log_success "You have the latest version!"
-    else
-        log_info "Update available: $current_version → $latest_version"
+    local needs_update=false
+    if [ "$user_version" != "$latest_version" ] && [ "$user_version" != "unknown" ]; then
+        log_info "User system update available: $user_version → $latest_version"
+        needs_update=true
+    fi
+    
+    if [ "$project_version" != "$latest_version" ] && [ "$project_version" != "unknown" ]; then
+        log_info "Project update available: $project_version → $latest_version"
+        needs_update=true
+    fi
+    
+    if [ "$needs_update" = true ]; then
         echo ""
         echo "To update, run: $0 --from-github"
+    else
+        log_success "All installations are up to date!"
     fi
 }
 
@@ -384,8 +454,9 @@ case "${1:-}" in
         echo "  --list             List currently installed agents"
         echo "  --dry-run          Show what would be installed without making changes"
         echo ""
-        echo "Installation location:"
-        echo "  System: ~/.claude/agents"
+        echo "Installation locations (you will be prompted to choose):"
+        echo "  Project: ./.claude/agents (current project only)"
+        echo "  System: ~/.claude/agents (available globally)"
         echo ""
         echo "Examples:"
         echo "  $0 --from-github              # Install latest release"
@@ -429,9 +500,31 @@ case "${1:-}" in
         exit 0
         ;;
     --list)
-        if [ -d "$SYSTEM_AGENTS_DIR" ]; then
+        log_info "Checking for installed agents..."
+        echo ""
+        
+        # Check user system directory
+        if [ -d "$HOME/.claude/agents" ] && [ -n "$(ls -A "$HOME/.claude/agents" 2>/dev/null)" ]; then
+            echo "User system agents (~/.claude/agents):"
+            CLAUDE_DIR="$HOME/.claude"
+            SYSTEM_AGENTS_DIR="$CLAUDE_DIR/agents"
             list_agents
-        else
+            echo ""
+        fi
+        
+        # Check project directory  
+        if [ -d "./.claude/agents" ] && [ -n "$(ls -A "./.claude/agents" 2>/dev/null)" ]; then
+            echo "Project agents (./.claude/agents):"
+            CLAUDE_DIR="./.claude"
+            SYSTEM_AGENTS_DIR="$CLAUDE_DIR/agents"
+            list_agents
+            echo ""
+        fi
+        
+        # If no agents found
+        if [ ! -d "$HOME/.claude/agents" ] && [ ! -d "./.claude/agents" ]; then
+            log_info "No agents installed yet"
+        elif [ -z "$(ls -A "$HOME/.claude/agents" 2>/dev/null)" ] && [ -z "$(ls -A "./.claude/agents" 2>/dev/null)" ]; then
             log_info "No agents installed yet"
         fi
         exit 0
