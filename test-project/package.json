@@ -1,0 +1,15 @@
+{
+  "name": "claude-agents-test-project",
+  "version": "1.0.0",
+  "description": "Test project for Claude Code agents installation and testing",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Running tests...\" && node src/test.js",
+    "lint": "echo \"Linting code...\"",
+    "build": "echo \"Building project...\""
+  },
+  "keywords": ["claude-code", "agents", "test"],
+  "author": "Test",
+  "license": "MIT"
+}
