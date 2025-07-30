@@ -12,7 +12,7 @@ Get started with enhanced Claude Code agents in seconds:
 
 ```bash
 # One-line install - download and install latest agents
-curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh | bash -s -- --from-github
+curl -fsSL https://raw.githubusercontent.com/valllabh/claude-agents/main/install-agents.sh | bash -s -- --from-github
 ```
 
 Then use your agents:
@@ -51,19 +51,19 @@ claude-agents/
 ### Option 1: One-Line Install (Recommended)
 ```bash
 # Download and install latest agents from GitHub releases
-curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh | bash -s -- --from-github
+curl -fsSL https://raw.githubusercontent.com/valllabh/claude-agents/main/install-agents.sh | bash -s -- --from-github
 ```
 
 Or with wget:
 ```bash
 # Download and install latest agents from GitHub releases
-wget -qO- https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh | bash -s -- --from-github
+wget -qO- https://raw.githubusercontent.com/valllabh/claude-agents/main/install-agents.sh | bash -s -- --from-github
 ```
 
 ### Option 2: Download Script First
 ```bash
 # Download the installer script
-curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh -o install-agents.sh
+curl -fsSL https://raw.githubusercontent.com/valllabh/claude-agents/main/install-agents.sh -o install-agents.sh
 chmod +x install-agents.sh
 
 # Install latest release
@@ -79,7 +79,7 @@ chmod +x install-agents.sh
 ### Option 3: Manual Installation (Development)
 ```bash
 # Clone this repository for local development
-git clone https://github.com/vajoshi/claude-agents.git
+git clone https://github.com/valllabh/claude-agents.git
 cd claude-agents
 
 # Install from local files
@@ -462,16 +462,16 @@ Keep your agents up to date with the latest enhancements:
 ### Option 2: Re-run the Installation Script
 ```bash
 # One-line update to latest version
-curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh | bash -s -- --from-github
+curl -fsSL https://raw.githubusercontent.com/valllabh/claude-agents/main/install-agents.sh | bash -s -- --from-github
 
 # Or check for updates first
-curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh | bash -s -- --check-updates
+curl -fsSL https://raw.githubusercontent.com/valllabh/claude-agents/main/install-agents.sh | bash -s -- --check-updates
 ```
 
 ### Option 3: Manual Update
 ```bash
 # Download script and run manually
-curl -fsSL https://raw.githubusercontent.com/vajoshi/claude-agents/main/install-agents.sh -o install-agents.sh
+curl -fsSL https://raw.githubusercontent.com/valllabh/claude-agents/main/install-agents.sh -o install-agents.sh
 chmod +x install-agents.sh
 ./install-agents.sh --from-github
 ```

@@ -6,7 +6,7 @@
 set -e
 
 # Configuration
-GITHUB_REPO="vajoshi/claude-agents"  # Update this with your actual repo
+GITHUB_REPO="valllabh/claude-agents"
 LOCAL_AGENTS_DIR="./claude/agents"
 DOWNLOAD_DIR="/tmp/claude-agents-download"
 
